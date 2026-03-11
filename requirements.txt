@@ -1,0 +1,6 @@
+# Core dependencies
+requests>=2.28.0
+urllib3>=1.26.0
+
+# Optional dependencies for enhanced functionality
+# These are kept minimal to avoid bloat
