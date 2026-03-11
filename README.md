@@ -3,7 +3,11 @@
 [![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
+**⚠️ This is a CLIENT library, NOT a server implementation.**
+
 Python client for [Alibaba Nacos](https://github.com/alibaba/nacos) - a dynamic service discovery, configuration and service management platform.
+
+> **Note:** This library allows your Python applications to connect to a Nacos server. You need to deploy the [Nacos server](https://github.com/alibaba/nacos) separately. The server is written in Java and is not included in this package.
 
 ## Features
 
@@ -14,6 +18,31 @@ Python client for [Alibaba Nacos](https://github.com/alibaba/nacos) - a dynamic 
 - **Long Polling**: Real-time configuration updates
 - **Retry Logic**: Built-in retry mechanism for resilience
 - **Type Hints**: Full type annotation support
+
+## Prerequisites
+
+Before using this client library, you need to deploy a **Nacos server**. This package does NOT include the server.
+
+### Quick Start with Nacos Server
+
+**Option 1: Docker (Recommended)**
+```bash
+docker run --name nacos-server \
+  -e MODE=standalone \
+  -p 8848:8848 \
+  -p 9848:9848 \
+  nacos/nacos-server:v2.3.0
+```
+
+**Option 2: Download Binary**
+```bash
+wget https://github.com/alibaba/nacos/releases/download/2.3.0/nacos-server-2.3.0.tar.gz
+tar -xzf nacos-server-2.3.0.tar.gz
+cd nacos/bin
+sh startup.sh -m standalone
+```
+
+Once the server is running, access the console at: http://localhost:8848/nacos (default login: nacos/nacos)
 
 ## Installation
 
@@ -30,6 +59,8 @@ pip install -e .
 ```
 
 ## Quick Start
+
+> **Note:** The examples below assume you have a Nacos server running at `http://localhost:8848`. See [Prerequisites](#prerequisites) for setup instructions.
 
 ### Service Registration & Discovery
 
@@ -125,6 +156,20 @@ Main client class for interacting with Nacos server.
 - `add_listener(data_id, group, callback, **kwargs)`: Add config listener
 - `remove_listener(data_id, group, callback, **kwargs)`: Remove config listener
 
+## Architecture
+
+```
+┌─────────────────┐         HTTP API          ┌─────────────────┐
+│   Your Python   │  ═══════════════════════► │   Nacos Server  │
+│   Application   │  ◄═══════════════════════ │   (Java)        │
+│   (nacos-py)    │    Service Registry       │                 │
+│                 │    Config Management      │                 │
+└─────────────────┘                           └─────────────────┘
+       Client                                          Server
+```
+
+**This package is the CLIENT only.** The Nacos server (written in Java) must be deployed separately.
+
 ## Examples
 
 See the [examples/](examples/) directory for more usage examples.
@@ -143,6 +188,27 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 Apache License 2.0 - see [LICENSE](LICENSE) file for details.
 
+## FAQ
+
+### Is this a Nacos server implementation?
+
+**No.** This is a Python client library that connects to an existing Nacos server. The server is written in Java by Alibaba and must be deployed separately.
+
+### Where can I get the Nacos server?
+
+Download the official Nacos server from: https://github.com/alibaba/nacos/releases
+
+Or use Docker:
+```bash
+docker run -e MODE=standalone -p 8848:8848 nacos/nacos-server:v2.3.0
+```
+
+### Can I run Nacos server in Python?
+
+No. The official Nacos server is implemented in Java. This library only provides client functionality for Python applications.
+
 ## Acknowledgments
 
 This project is inspired by the official [Nacos Java Client](https://github.com/alibaba/nacos).
+
+This is a **client-only** library. For the server implementation, see [alibaba/nacos](https://github.com/alibaba/nacos).
